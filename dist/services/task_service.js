@@ -54,7 +54,10 @@ exports.taskService = {
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
-            yield repo.delete(id);
+            const result = yield repo.delete(id);
+            if (result.affected === 0) {
+                return Error("nothing task!");
+            }
             return {
                 message: "success",
             };

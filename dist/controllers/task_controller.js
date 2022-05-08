@@ -26,7 +26,7 @@ const findTask = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     try {
         const { id } = req.params;
         const task = yield task_service_1.taskService.findOne(Number(id));
-        res.status(200).json({ task });
+        res.status(200).json({ task, user: res.locals.currentUser });
     }
     catch (error) {
         console.log(error);

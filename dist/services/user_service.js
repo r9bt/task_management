@@ -36,7 +36,6 @@ exports.userService = {
         return __awaiter(this, void 0, void 0, function* () {
             const repo = data_source_1.AppDataSource.getRepository(User_1.User);
             const user = yield repo.findOne({ where: { email } });
-            const errors = yield (0, class_validator_1.validate)(user);
             return user;
         });
     },

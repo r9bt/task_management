@@ -26,14 +26,13 @@ const logIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         if (!valid)
             return new Error("Missing password!");
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
-        res.status(200).json({
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-            },
-            token,
-        });
+        const buildUser = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+        };
+        res.locals.currentUser = buildUser;
+        res.status(200).json({ user: buildUser, token });
     }
     catch (error) {
         console.log(error);

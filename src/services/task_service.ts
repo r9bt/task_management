@@ -46,7 +46,11 @@ export const taskService = {
   async delete(id: number) {
     const repo = AppDataSource.getRepository(Task);
 
-    await repo.delete(id);
+    const result = await repo.delete(id);
+
+    if (result.affected === 0) {
+      return Error("Nothing task!");
+    }
 
     return {
       message: "success",

@@ -27,7 +27,6 @@ export const userService = {
     const repo = AppDataSource.getRepository(User);
 
     const user = await repo.findOne({ where: { email } });
-    const errors = await validate(user);
 
     return user;
   },

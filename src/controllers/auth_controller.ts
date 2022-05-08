@@ -19,14 +19,13 @@ export const logIn: RequestHandler = async (req, res, next) => {
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
 
-    res.status(200).json({
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
-      token,
-    });
+    const buildUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
+
+    res.status(200).json({ user: buildUser, token });
   } catch (error) {
     console.log(error);
     next(error);

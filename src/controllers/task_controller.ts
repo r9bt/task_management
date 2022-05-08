@@ -28,7 +28,7 @@ export const createTask: RequestHandler = async (req, res, next) => {
     const task = await taskService.create(content);
     res.status(200).json({ task });
   } catch (error) {
-    console.log("a");
+    console.log(error);
     next(error);
   }
 };
