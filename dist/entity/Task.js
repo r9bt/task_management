@@ -9,6 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const class_validator_1 = require("class-validator");
 const typeorm_1 = require("typeorm");
 let Task = class Task {
 };
@@ -17,19 +18,19 @@ __decorate([
     __metadata("design:type", Number)
 ], Task.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({
-        type: "varchar",
-        length: 100,
-        nullable: false,
-    }),
+    (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], Task.prototype, "content", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Task.prototype, "userId", void 0);
+__decorate([
     (0, typeorm_1.Column)({
-        type: "boolean",
         default: false,
-        nullable: false,
     }),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Boolean)
 ], Task.prototype, "isCompleted", void 0);
 Task = __decorate([

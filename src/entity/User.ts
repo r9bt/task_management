@@ -1,20 +1,22 @@
 import { IsEmail, IsNotEmpty } from "class-validator";
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import Task from "./Task";
 
 @Entity()
 export class User {
   @Column()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @Column()
   @IsNotEmpty()
   @IsEmail()
-  email: string;
+  email!: string;
 
   @Column()
-  password: string;
+  @IsNotEmpty()
+  password!: string;
 
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 }

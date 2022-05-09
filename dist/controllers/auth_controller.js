@@ -31,7 +31,6 @@ const logIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
             name: user.name,
             email: user.email,
         };
-        res.locals.currentUser = buildUser;
         res.status(200).json({ user: buildUser, token });
     }
     catch (error) {
@@ -42,13 +41,14 @@ const logIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
 exports.logIn = logIn;
 const logOut = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const decode = res.locals.decode;
-        const user = yield user_service_1.userService.findById(decode.id);
-        if (user) {
-            res.status(200).json({
-                success: true,
-            });
+        const id = res.locals.decode.id;
+        const user = yield user_service_1.userService.findById(id);
+        if (!user) {
+            throw new Error("Can't logOut");
         }
+        res.status(200).json({
+            success: true,
+        });
     }
     catch (error) {
         console.log(error);

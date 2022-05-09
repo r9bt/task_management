@@ -16,14 +16,15 @@ require("dotenv/config");
 const argon2 = require("argon2");
 const getAccount = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const decode = res.locals.decode;
-        const user = yield user_service_1.userService.findById(decode.id);
+        const id = res.locals.decode.id;
+        const user = yield user_service_1.userService.findById(id);
+        const buildUser = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+        };
         res.status(200).json({
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-            },
+            user: buildUser,
         });
     }
     catch (error) {
@@ -44,12 +45,13 @@ const createAccount = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         const hashedPassword = yield argon2.hash(password);
         user = yield user_service_1.userService.create(name, email, hashedPassword);
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+        const buildUser = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+        };
         res.status(200).json({
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-            },
+            user: buildUser,
             token,
         });
     }
@@ -61,13 +63,16 @@ const createAccount = (req, res, next) => __awaiter(void 0, void 0, void 0, func
 exports.createAccount = createAccount;
 const updateAccount = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const decode = res.locals.decode;
+        const id = res.locals.decode.id;
         const { name, email } = req.body;
-        const user = yield user_service_1.userService.update(Number(decode.id), name, email);
-        res.status(200).send({
+        const user = yield user_service_1.userService.update(id, name, email);
+        const buildUser = {
             id: user.id,
             name: user.name,
             email: user.email,
+        };
+        res.status(200).send({
+            user: buildUser,
         });
     }
     catch (error) {

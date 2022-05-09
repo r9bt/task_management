@@ -34,14 +34,16 @@ export const logIn: RequestHandler = async (req, res, next) => {
 
 export const logOut: RequestHandler = async (req, res, next) => {
   try {
-    const decode = res.locals.decode as Decode;
-    const user = await userService.findById(decode.id);
+    const id = (res.locals.decode as Decode).id;
+    const user = await userService.findById(id);
 
-    if (user) {
-      res.status(200).json({
-        success: true,
-      });
+    if (!user) {
+      throw new Error("Can't logOut");
     }
+
+    res.status(200).json({
+      success: true,
+    });
   } catch (error) {
     console.log(error);
     next(error);

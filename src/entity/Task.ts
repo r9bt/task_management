@@ -1,21 +1,21 @@
+import { IsNotEmpty } from "class-validator";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export default class Task {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
+
+  @Column()
+  @IsNotEmpty()
+  content!: string;
+
+  @Column()
+  userId?: number;
 
   @Column({
-    type: "varchar",
-    length: 100,
-    nullable: false,
-  })
-  content: string;
-
-  @Column({
-    type: "boolean",
     default: false,
-    nullable: false,
   })
-  isCompleted: boolean;
+  @IsNotEmpty()
+  isCompleted!: boolean;
 }

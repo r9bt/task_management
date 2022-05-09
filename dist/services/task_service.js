@@ -13,50 +13,50 @@ exports.taskService = void 0;
 const data_source_1 = require("../data-source");
 const Task_1 = require("../entity/Task");
 exports.taskService = {
-    findAll() {
+    findAll(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
-            const allTasks = yield repo.find();
+            const allTasks = yield repo.find({ where: { userId } });
             return allTasks;
         });
     },
-    findOne(id) {
+    findOne(id, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
-            const task = yield repo.findOne({ where: { id } });
+            const task = yield repo.findOne({ where: { id, userId } });
             return task;
         });
     },
-    create(content) {
+    create(content, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
-            const task = repo.create({ content });
+            const task = repo.create({ content, userId });
             yield repo.save(task);
             return task;
         });
     },
-    updateComplete(id, isCompleted) {
+    updateComplete(id, isCompleted, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
             yield repo.update(id, { isCompleted });
-            const task = yield repo.findOne({ where: { id } });
+            const task = yield repo.findOne({ where: { id, userId } });
             return task;
         });
     },
-    updateContent(id, content) {
+    updateContent(id, content, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
             yield repo.update(id, { content });
-            const task = yield repo.findOne({ where: { id } });
+            const task = yield repo.findOne({ where: { id, userId } });
             return task;
         });
     },
-    delete(id) {
+    delete(id, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
-            const result = yield repo.delete(id);
+            const result = yield repo.delete({ id, userId });
             if (result.affected === 0) {
-                return Error("nothing task!");
+                return Error("Nothing task!");
             }
             return {
                 message: "success",

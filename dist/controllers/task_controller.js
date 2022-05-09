@@ -13,7 +13,8 @@ exports.deleteTask = exports.updateTask = exports.completeTask = exports.createT
 const task_service_1 = require("../services/task_service");
 const findTaskList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const tasks = yield task_service_1.taskService.findAll();
+        const userId = res.locals.decode.id;
+        const tasks = yield task_service_1.taskService.findAll(userId);
         res.status(200).json({ tasks });
     }
     catch (error) {
@@ -25,8 +26,9 @@ exports.findTaskList = findTaskList;
 const findTask = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const task = yield task_service_1.taskService.findOne(Number(id));
-        res.status(200).json({ task, user: res.locals.currentUser });
+        const userId = res.locals.decode.id;
+        const task = yield task_service_1.taskService.findOne(Number(id), userId);
+        res.status(200).json({ task });
     }
     catch (error) {
         console.log(error);
@@ -36,12 +38,20 @@ const findTask = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 exports.findTask = findTask;
 const createTask = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const userId = res.locals.decode.id;
         const { content } = req.body;
-        const task = yield task_service_1.taskService.create(content);
-        res.status(200).json({ task });
+        const task = yield task_service_1.taskService.create(content, userId);
+        res.status(200).json({
+            task: {
+                id: task.id,
+                userId: task.userId,
+                content: task.content,
+                isCompleted: task.isCompleted,
+            },
+        });
     }
     catch (error) {
-        console.log("a");
+        console.log(error);
         next(error);
     }
 });
@@ -50,7 +60,8 @@ const completeTask = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     try {
         const { id } = req.params;
         const { isCompleted } = req.body;
-        const task = yield task_service_1.taskService.updateComplete(Number(id), isCompleted);
+        const userId = res.locals.decode.id;
+        const task = yield task_service_1.taskService.updateComplete(Number(id), isCompleted, userId);
         res.status(200).json({ task });
     }
     catch (error) {
@@ -63,7 +74,8 @@ const updateTask = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     try {
         const { id } = req.params;
         const { content } = req.body;
-        const task = yield task_service_1.taskService.updateContent(Number(id), content);
+        const userId = res.locals.decode.id;
+        const task = yield task_service_1.taskService.updateContent(Number(id), content, userId);
         res.status(200).json({ task });
     }
     catch (error) {
@@ -75,7 +87,8 @@ exports.updateTask = updateTask;
 const deleteTask = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const result = yield task_service_1.taskService.delete(Number(id));
+        const userId = res.locals.decode.id;
+        const result = yield task_service_1.taskService.delete(Number(id), userId);
         res.status(200).json({ message: result.message });
     }
     catch (error) {

@@ -8,16 +8,14 @@ import { User } from "../entity/User";
 
 export const getAccount: RequestHandler = async (req, res, next) => {
   try {
-    const decode = res.locals.decode as Decode;
-    const user = await userService.findById(decode.id);
+    const id = (res.locals.decode as Decode).id;
+    const user = await userService.findById(id);
 
     const buildUser = {
       id: user.id,
       name: user.name,
       email: user.email,
     };
-
-    res.locals.currentUser = buildUser;
 
     res.status(200).json({
       user: buildUser,
@@ -63,9 +61,9 @@ export const createAccount: RequestHandler = async (req, res, next) => {
 
 export const updateAccount: RequestHandler = async (req, res, next) => {
   try {
-    const decode = res.locals.decode as Decode;
+    const id = (res.locals.decode as Decode).id;
     const { name, email } = req.body as { name: string; email: string };
-    const user = await userService.update(Number(decode.id), name, email);
+    const user = await userService.update(id, name, email);
 
     const buildUser = {
       id: user.id,
