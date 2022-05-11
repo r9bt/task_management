@@ -53,7 +53,7 @@ export const taskService = {
     }
 
     return {
-      message: "成功",
+      message: "success",
     };
   },
 };
