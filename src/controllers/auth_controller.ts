@@ -4,18 +4,22 @@ import * as jwt from "jsonwebtoken";
 import "dotenv/config";
 import { Decode } from "../middleware/auth";
 import * as argon2 from "argon2";
+import CustomError from "../error/error";
 
 export const logIn: RequestHandler = async (req, res, next) => {
   try {
     const { email, password } = req.body as { email: string; password: string };
-
-    if (password.length < 8) throw new Error("Short password!");
+    const id = (res.locals.decode as Decode).id;
 
     const user = await userService.findByEmail(email);
-    if (!user) return new Error("Missing email!");
+
+    if (password.length < 8)
+      return next(
+        new CustomError(400, "パスワードは８文字以上でお願いします。")
+      );
 
     const valid = await argon2.verify(user.password, password);
-    if (!valid) return new Error("Missing password!");
+    if (!valid) return new CustomError(400, "パスワードが正しくありません。");
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
 
@@ -26,9 +30,14 @@ export const logIn: RequestHandler = async (req, res, next) => {
     };
 
     res.status(200).json({ user: buildUser, token });
-  } catch (error) {
+  } catch (error: unknown) {
     console.log(error);
-    next(error);
+    next(
+      new CustomError(
+        400,
+        "正しい形式でメールアドレス、パスワードの入力をお願いします。"
+      )
+    );
   }
 };
 
@@ -38,7 +47,7 @@ export const logOut: RequestHandler = async (req, res, next) => {
     const user = await userService.findById(id);
 
     if (!user) {
-      throw new Error("Can't logOut");
+      return next(new CustomError(400, "ログアウトするユーザーがいません。"));
     }
 
     res.status(200).json({
@@ -46,6 +55,6 @@ export const logOut: RequestHandler = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    next(error);
+    next(new CustomError(400, "ログアウトに失敗しました。"));
   }
 };

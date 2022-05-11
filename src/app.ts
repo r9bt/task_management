@@ -1,4 +1,4 @@
-import * as express from "express";
+import express from "express";
 import routers from "./routes/index";
 import { errorHandler } from "./error/error_handler";
 import "dotenv/config";

@@ -1,26 +1,24 @@
 import { Request, RequestHandler } from "express";
 import * as jwt from "jsonwebtoken";
 import "dotenv/config";
+import CustomError from "../error/error";
 
 export type Decode = {
   id: number;
 };
 
 export const auth: RequestHandler = (req, res, next) => {
-  const token = _getToken(req);
-  if (!token) return next();
   try {
-    res.locals.decode = jwt.verify(token, process.env.JWT_SECRET) as Decode;
+    const token = _getToken(req);
+    if (!token) return next(new CustomError(400, "tokenがありませんでした。"));
+    const decode = jwt.verify(token, process.env.JWT_SECRET) as Decode;
+    if (!decode)
+      return next(new CustomError(400, "tokenが一致しませんでした。"));
+    res.locals.decode = decode;
     next();
   } catch (e: unknown) {
-    if (e instanceof jwt.TokenExpiredError) {
-      console.error("トークンの有効期限が切れています。", e);
-    } else if (e instanceof jwt.JsonWebTokenError) {
-      console.error("トークンが不正です。", e);
-    } else {
-      console.error("トークンの検証でその他のエラーが発生しました。", e);
-    }
-    throw e;
+    console.log(e);
+    next(new CustomError(400, "tokenエラー"));
   }
 };
 

@@ -8,13 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppDataSource = void 0;
 require("reflect-metadata");
 const typeorm_1 = require("typeorm");
 const User_1 = require("./entity/User");
 require("dotenv/config");
-const Task_1 = require("./entity/Task");
+const Task_1 = __importDefault(require("./entity/Task"));
 const AppDataSource = new typeorm_1.DataSource({
     type: "mysql",
     port: Number(process.env.DB_PORT),

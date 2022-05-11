@@ -10,7 +10,7 @@ export const taskService = {
 
   async findOne(id: number, userId: number) {
     const repo = AppDataSource.getRepository(Task);
-    const task = await repo.findOne({ where: { id, userId } });
+    const task = await repo.findOneOrFail({ where: { id, userId } });
     return task;
   },
 
@@ -28,7 +28,7 @@ export const taskService = {
 
     await repo.update(id, { isCompleted });
 
-    const task = await repo.findOne({ where: { id, userId } });
+    const task = await repo.findOneOrFail({ where: { id, userId } });
 
     return task;
   },
@@ -38,7 +38,7 @@ export const taskService = {
 
     await repo.update(id, { content });
 
-    const task = await repo.findOne({ where: { id, userId } });
+    const task = await repo.findOneOrFail({ where: { id, userId } });
 
     return task;
   },
@@ -49,7 +49,7 @@ export const taskService = {
     const result = await repo.delete({ id, userId });
 
     if (result.affected === 0) {
-      return Error("Nothing task!");
+      return new Error();
     }
 
     return {

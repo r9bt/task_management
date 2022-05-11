@@ -8,10 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.taskService = void 0;
 const data_source_1 = require("../data-source");
-const Task_1 = require("../entity/Task");
+const Task_1 = __importDefault(require("../entity/Task"));
 exports.taskService = {
     findAll(userId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -56,7 +59,7 @@ exports.taskService = {
             const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
             const result = yield repo.delete({ id, userId });
             if (result.affected === 0) {
-                return Error("Nothing task!");
+                return new Error();
             }
             return {
                 message: "success",

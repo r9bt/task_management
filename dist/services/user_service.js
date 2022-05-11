@@ -35,15 +35,29 @@ exports.userService = {
     findByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             const repo = data_source_1.AppDataSource.getRepository(User_1.User);
-            const user = yield repo.findOne({ where: { email } });
+            // let user: User;
+            // user = await repo.findOne({ where: { id } });
+            // user.email;
+            // const errors = await validate(user);
+            // if (errors.length > 0)
+            //   throw new Error(
+            //     errors.map((error) => Object.values(error.constraints || {})).join(",")
+            //   );
+            const user = yield repo.findOneOrFail({ where: { email } });
             return user;
         });
     },
     update(id, name, email) {
         return __awaiter(this, void 0, void 0, function* () {
             const repo = data_source_1.AppDataSource.getRepository(User_1.User);
+            let user;
+            user = yield repo.findOne({ where: { id } });
+            user.name = name;
+            user.email = email;
+            const errors = yield (0, class_validator_1.validate)(user);
+            if (errors.length > 0)
+                throw new Error(errors.map((error) => Object.values(error.constraints || {})).join(","));
             yield repo.update(id, { name, email });
-            const user = yield repo.findOne({ where: { id } });
             return user;
         });
     },

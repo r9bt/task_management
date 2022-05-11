@@ -5,11 +5,14 @@ import "dotenv/config";
 import { Decode } from "../middleware/auth";
 import * as argon2 from "argon2";
 import { User } from "../entity/User";
+import CustomError from "../error/error";
 
 export const getAccount: RequestHandler = async (req, res, next) => {
   try {
     const id = (res.locals.decode as Decode).id;
     const user = await userService.findById(id);
+
+    if (!user) return next(new CustomError(400, "ユーザーがいません。"));
 
     const buildUser = {
       id: user.id,
@@ -22,7 +25,7 @@ export const getAccount: RequestHandler = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    next(error);
+    next(new CustomError(400, "アカウント取得に失敗しました"));
   }
 };
 
@@ -36,11 +39,17 @@ export const createAccount: RequestHandler = async (req, res, next) => {
     let user: User;
 
     user = await userService.findByEmail(email);
-    if (user) throw new Error("Arleady used email!");
-    if (password.length < 8) throw new Error("Short password!");
+    if (user)
+      return next(new CustomError(400, "既に登録済みのメールアドレスです。"));
 
+    if (password.length < 8)
+      return next(
+        new CustomError(400, "パスワードは８文字以上でお願いします。")
+      );
     const hashedPassword = await argon2.hash(password);
+
     user = await userService.create(name, email, hashedPassword);
+
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
 
     const buildUser = {
@@ -55,7 +64,12 @@ export const createAccount: RequestHandler = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    next(error);
+    next(
+      new CustomError(
+        400,
+        "正しい形式でメールアドレス、パスワードの入力をお願いします。"
+      )
+    );
   }
 };
 
@@ -76,6 +90,6 @@ export const updateAccount: RequestHandler = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    next(error);
+    next(new CustomError(400, "アカウント更新に失敗しました。"));
   }
 };
