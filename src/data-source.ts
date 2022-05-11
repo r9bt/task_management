@@ -20,7 +20,7 @@ const AppDataSource = new DataSource({
 
 AppDataSource.initialize()
   .then(async () => {
-    console.log("Server connecting!");
+    console.log("サーバー接続中…");
   })
   .catch((error) => console.log(error));
 
