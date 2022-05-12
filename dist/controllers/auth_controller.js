@@ -44,13 +44,14 @@ const error_1 = __importDefault(require("../error/error"));
 const logIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
-        const id = res.locals.decode.id;
         const user = yield user_service_1.userService.findByEmail(email);
+        if (!user)
+            return next(new error_1.default(400, "メールアドレスが正しくありません。"));
         if (password.length < 8)
             return next(new error_1.default(400, "パスワードは８文字以上でお願いします。"));
         const valid = yield argon2.verify(user.password, password);
         if (!valid)
-            return new error_1.default(400, "パスワードが正しくありません。");
+            return next(new error_1.default(400, "パスワードが正しくありません。"));
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
         const buildUser = {
             id: user.id,
@@ -61,7 +62,7 @@ const logIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
     }
     catch (error) {
         console.log(error);
-        next(new error_1.default(400, "正しい形式でメールアドレス、パスワードの入力をお願いします。"));
+        next(new error_1.default(400, "ログインに失敗しました。"));
     }
 });
 exports.logIn = logIn;

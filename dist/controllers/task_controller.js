@@ -35,8 +35,9 @@ const findTask = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         res.status(200).json({ task });
     }
     catch (error) {
-        error.status = 400;
         console.log(error);
+        if (error.message)
+            return next(error);
         next(new error_1.default(400, "タスク取得に失敗しました。"));
     }
 });
@@ -45,6 +46,8 @@ const createTask = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     try {
         const userId = res.locals.decode.id;
         const { content } = req.body;
+        if (!content)
+            return next(new error_1.default(400, "タスク内容を入力してください。"));
         const task = yield task_service_1.taskService.create(content, userId);
         res.status(200).json({
             task: {
@@ -71,6 +74,8 @@ const completeTask = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     }
     catch (error) {
         console.log(error);
+        if (error.message)
+            return next(error);
         next(new error_1.default(400, "タスク更新に失敗しました。"));
     }
 });
@@ -85,6 +90,8 @@ const updateTask = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
     catch (error) {
         console.log(error);
+        if (error.message)
+            return next(error);
         next(new error_1.default(400, "タスク更新に失敗しました。"));
     }
 });
@@ -98,6 +105,8 @@ const deleteTask = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
     catch (error) {
         console.log(error);
+        if (error.message)
+            return next(error);
         next(new error_1.default(400, "タスク削除に失敗しました。"));
     }
 });

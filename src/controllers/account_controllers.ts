@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import { userService } from "../services/user_service";
 import * as jwt from "jsonwebtoken";
 import "dotenv/config";
-import { Decode } from "../middleware/auth";
+import { Decode } from "../middleware/access_token";
 import * as argon2 from "argon2";
 import { User } from "../entity/User";
 import CustomError from "../error/error";
@@ -12,7 +12,8 @@ export const getAccount: RequestHandler = async (req, res, next) => {
     const id = (res.locals.decode as Decode).id;
     const user = await userService.findById(id);
 
-    if (!user) return next(new CustomError(400, "ユーザーがいません。"));
+    if (!user)
+      return next(new CustomError(400, "アカウント取得に失敗しました。"));
 
     const buildUser = {
       id: user.id,
@@ -25,7 +26,7 @@ export const getAccount: RequestHandler = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    next(new CustomError(400, "アカウント取得に失敗しました"));
+    next(new CustomError(400, "アカウント取得に失敗しました。"));
   }
 };
 
@@ -38,14 +39,17 @@ export const createAccount: RequestHandler = async (req, res, next) => {
     };
     let user: User;
 
-    user = await userService.findByEmail(email);
-    if (user)
-      return next(new CustomError(400, "既に登録済みのメールアドレスです。"));
+    if (!name) return next(new CustomError(400, "名前の入力をお願いします。"));
 
     if (password.length < 8)
       return next(
         new CustomError(400, "パスワードは８文字以上でお願いします。")
       );
+
+    user = await userService.findByEmail(email);
+    if (user)
+      return next(new CustomError(400, "既に登録済みのメールアドレスです。"));
+
     const hashedPassword = await argon2.hash(password);
 
     user = await userService.create(name, email, hashedPassword);
@@ -64,10 +68,11 @@ export const createAccount: RequestHandler = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
+    if (error.message) return next(error);
     next(
       new CustomError(
         400,
-        "正しい形式でメールアドレス、パスワードの入力をお願いします。"
+        "正しい形式でメールアドレス、パスワード入力をお願いします。"
       )
     );
   }
@@ -77,6 +82,9 @@ export const updateAccount: RequestHandler = async (req, res, next) => {
   try {
     const id = (res.locals.decode as Decode).id;
     const { name, email } = req.body as { name: string; email: string };
+
+    if (!name) return next(new CustomError(400, "名前の入力をお願いします。"));
+
     const user = await userService.update(id, name, email);
 
     const buildUser = {
@@ -90,6 +98,7 @@ export const updateAccount: RequestHandler = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
+    if (error.message) return next(error);
     next(new CustomError(400, "アカウント更新に失敗しました。"));
   }
 };

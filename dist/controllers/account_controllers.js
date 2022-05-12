@@ -46,7 +46,7 @@ const getAccount = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         const id = res.locals.decode.id;
         const user = yield user_service_1.userService.findById(id);
         if (!user)
-            return next(new error_1.default(400, "ユーザーがいません。"));
+            return next(new error_1.default(400, "アカウント取得に失敗しました。"));
         const buildUser = {
             id: user.id,
             name: user.name,
@@ -58,7 +58,7 @@ const getAccount = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
     catch (error) {
         console.log(error);
-        next(new error_1.default(400, "アカウント取得に失敗しました"));
+        next(new error_1.default(400, "アカウント取得に失敗しました。"));
     }
 });
 exports.getAccount = getAccount;
@@ -66,11 +66,13 @@ const createAccount = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     try {
         const { name, email, password } = req.body;
         let user;
+        if (!name)
+            return next(new error_1.default(400, "名前の入力をお願いします。"));
+        if (password.length < 8)
+            return next(new error_1.default(400, "パスワードは８文字以上でお願いします。"));
         user = yield user_service_1.userService.findByEmail(email);
         if (user)
             return next(new error_1.default(400, "既に登録済みのメールアドレスです。"));
-        if (password.length < 8)
-            return next(new error_1.default(400, "パスワードは８文字以上でお願いします。"));
         const hashedPassword = yield argon2.hash(password);
         user = yield user_service_1.userService.create(name, email, hashedPassword);
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
@@ -86,7 +88,9 @@ const createAccount = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     }
     catch (error) {
         console.log(error);
-        next(new error_1.default(400, "正しい形式でメールアドレス、パスワードの入力をお願いします。"));
+        if (error.message)
+            return next(error);
+        next(new error_1.default(400, "正しい形式でメールアドレス、パスワード入力をお願いします。"));
     }
 });
 exports.createAccount = createAccount;
@@ -94,6 +98,8 @@ const updateAccount = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     try {
         const id = res.locals.decode.id;
         const { name, email } = req.body;
+        if (!name)
+            return next(new error_1.default(400, "名前の入力をお願いします。"));
         const user = yield user_service_1.userService.update(id, name, email);
         const buildUser = {
             id: user.id,
@@ -106,6 +112,8 @@ const updateAccount = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     }
     catch (error) {
         console.log(error);
+        if (error.message)
+            return next(error);
         next(new error_1.default(400, "アカウント更新に失敗しました。"));
     }
 });

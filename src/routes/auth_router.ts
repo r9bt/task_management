@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { logIn, logOut } from "../controllers/auth_controller";
 
-import { auth } from "../middleware/auth";
+import { accessToken } from "../middleware/access_token";
 
 const router = Router();
 
 router.post("/", logIn);
-router.delete("/", auth, logOut);
+router.delete("/", accessToken, logOut);
 
 export { router as authRouter };

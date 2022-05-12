@@ -7,7 +7,7 @@ export type Decode = {
   id: number;
 };
 
-export const auth: RequestHandler = (req, res, next) => {
+export const accessToken: RequestHandler = (req, res, next) => {
   try {
     const token = _getToken(req);
     if (!token) return next(new CustomError(400, "tokenがありませんでした。"));
@@ -18,7 +18,7 @@ export const auth: RequestHandler = (req, res, next) => {
     next();
   } catch (e: unknown) {
     console.log(e);
-    next(new CustomError(400, "tokenエラー"));
+    next(new CustomError(400, "token取得に失敗しました。"));
   }
 };
 

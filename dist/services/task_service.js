@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.taskService = void 0;
 const data_source_1 = require("../data-source");
 const Task_1 = __importDefault(require("../entity/Task"));
+const error_1 = __importDefault(require("../error/error"));
 exports.taskService = {
     findAll(userId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -25,9 +26,14 @@ exports.taskService = {
     },
     findOne(id, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
-            const task = yield repo.findOne({ where: { id, userId } });
-            return task;
+            try {
+                const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
+                const task = yield repo.findOneOrFail({ where: { id, userId } });
+                return task;
+            }
+            catch (_) {
+                throw new error_1.default(400, "タスクがありませんでした。");
+            }
         });
     },
     create(content, userId) {
@@ -41,16 +47,28 @@ exports.taskService = {
     updateComplete(id, isCompleted, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
+            try {
+                yield repo.findOneOrFail({ where: { id, userId } });
+            }
+            catch (_) {
+                throw new error_1.default(400, "更新するタスクがありませんでした。");
+            }
             yield repo.update(id, { isCompleted });
-            const task = yield repo.findOne({ where: { id, userId } });
+            const task = yield repo.findOneOrFail({ where: { id, userId } });
             return task;
         });
     },
     updateContent(id, content, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
+            try {
+                yield repo.findOneOrFail({ where: { id, userId } });
+            }
+            catch (_) {
+                throw new error_1.default(400, "更新するタスクがありませんでした。");
+            }
             yield repo.update(id, { content });
-            const task = yield repo.findOne({ where: { id, userId } });
+            const task = yield repo.findOneOrFail({ where: { id, userId } });
             return task;
         });
     },
@@ -59,7 +77,7 @@ exports.taskService = {
             const repo = data_source_1.AppDataSource.getRepository(Task_1.default);
             const result = yield repo.delete({ id, userId });
             if (result.affected === 0) {
-                return new Error();
+                throw new error_1.default(400, "削除するタスクがありませんでした。");
             }
             return {
                 message: "success",

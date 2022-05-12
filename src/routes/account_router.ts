@@ -4,12 +4,12 @@ import {
   getAccount,
   updateAccount,
 } from "../controllers/account_controllers";
-import { auth } from "../middleware/auth";
+import { accessToken } from "../middleware/access_token";
 
 const router = Router();
 
-router.get("/", auth, getAccount);
+router.get("/", accessToken, getAccount);
 router.post("/", createAccount);
-router.patch("/profile", auth, updateAccount);
+router.patch("/profile", accessToken, updateAccount);
 
 export { router as accountRouter };

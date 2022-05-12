@@ -14,6 +14,6 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use(index_1.default);
 app.use(error_handler_1.errorHandler);
 app.listen(PORT, () => {
-    console.log("Server is up on port " + PORT);
+    console.log(PORT);
 });
 //# sourceMappingURL=app.js.map

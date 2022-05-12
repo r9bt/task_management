@@ -7,14 +7,14 @@ import {
   deleteTask,
   findTask,
 } from "../controllers/task_controller";
-import { auth } from "../middleware/auth";
+import { accessToken } from "../middleware/access_token";
 const router = Router();
 
-router.get("/", auth, findTaskList);
-router.post("/", auth, createTask);
-router.get("/:id", auth, findTask);
-router.patch("/:id/complete", auth, completeTask);
-router.patch("/:id/update", auth, updateTask);
-router.delete("/:id", auth, deleteTask);
+router.get("/", accessToken, findTaskList);
+router.post("/", accessToken, createTask);
+router.get("/:id", accessToken, findTask);
+router.patch("/:id/complete", accessToken, completeTask);
+router.patch("/:id/update", accessToken, updateTask);
+router.delete("/:id", accessToken, deleteTask);
 
 export { router as taskRouter };

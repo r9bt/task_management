@@ -34,7 +34,7 @@ const AppDataSource = new typeorm_1.DataSource({
 exports.AppDataSource = AppDataSource;
 AppDataSource.initialize()
     .then(() => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Server connecting!");
+    console.log("DB接続中…");
 }))
     .catch((error) => console.log(error));
 //# sourceMappingURL=data-source.js.map
